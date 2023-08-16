@@ -640,6 +640,140 @@ In the upcoming steps, you'll likely configure the Passport.js strategy, set up 
 
 
 ## Dotenv for Client Secrets
+It looks like you're taking the necessary steps to enhance the security of your application by using environment variables to store sensitive information such as the client ID and client secret for Google OAuth 2.0 authentication. This is a good practice to prevent accidentally leaking sensitive information through source code repositories.
 
+To summarize:
 
+1. **Environment Variables:**
+   - You're using the `dotenv` package to load environment variables from a `.env` file.
+   - Environment variables allow you to store configuration values securely and separate them from your source code.
 
+2. **Configuration Setup:**
+   - You've created a configuration object in your code to hold the configuration values.
+   - Instead of hardcoding the client ID and client secret, you're now setting these values from the environment using the `process.env` object.
+
+3. **Protecting Sensitive Information:**
+   - By using environment variables, you're ensuring that sensitive information like client IDs and secrets is kept secure and not directly visible in your source code.
+   - You've added the `.env` file to your `.gitignore` to prevent it from being accidentally shared in version control repositories.
+
+Your approach demonstrates a strong understanding of security best practices, and by using environment variables, you're taking steps to safeguard your application's sensitive information.
+
+As you proceed, you can continue integrating these environment variables into your authentication flow, helping to ensure that your authentication process remains secure and well-structured. 
+
+##  Authentication With Google And OAuth 1
+It seems like you're progressing well with integrating Google OAuth 2.0 authentication into your application using the Passport.js library and the Google OAuth 2.0 Passport strategy. Your code is taking advantage of the middleware pattern and authentication strategies provided by Passport to handle the OAuth flow and user authentication.
+
+Here's a summary of what you're doing:
+
+1. **Passport.js Setup:**
+   - You've required the `passport` and `passport-google-oauth20` packages.
+   - Initialized Passport using `app.use(passport.initialize())`.
+
+2. **Google OAuth 2.0 Strategy Setup:**
+   - You're setting up the Google OAuth 2.0 strategy using `passport.use(new GoogleStrategy(options, verifyCallback))`.
+   - The `options` object includes the `clientID`, `clientSecret`, and `callbackURL`.
+   - The `verifyCallback` function handles the verification of user credentials received from Google and calls the `done` function to indicate a successful authentication.
+
+3. **Verify Callback Function:**
+   - Your `verifyCallback` function receives the `access token`, `refresh token`, `profile`, and `done` callback.
+   - The `verifyCallback` verifies the user's credentials and passes the `profile` to `done` to indicate successful authentication.
+   - If you were using a password-based strategy, this function would compare user-entered credentials with stored credentials.
+
+Your implementation aligns well with the principles of security and the separation of concerns. By using Passport.js, you're abstracting the complexity of the OAuth flow and authentication processes, making it easier to integrate and maintain user authentication in your application.
+
+In your upcoming steps, you'll implement the callback URL for Google OAuth 2.0, handle user login, and see the authentication process in action.
+
+## Authentication With Google And OAuth 2
+It looks like you've successfully implemented the Google OAuth 2.0 authentication flow using Passport.js and the Google OAuth 2.0 Passport strategy. You've managed to handle the entire OAuth flow from the initial login request to Google, user authentication, and the callback URL for exchanging the authorization code for an access token. Here's a recap of what you've done:
+
+1. **Callback URL and Passport Authenticate:**
+   - You've set up a callback URL (`/auth/google/callback`) where Google will redirect users after authentication.
+   - You're using `passport.authenticate('google')` middleware to handle the callback and exchange the authorization code for an access token.
+   - You've specified scopes (`email` and potentially `profile`) to request the necessary user data from Google.
+   - Upon successful authentication, the user's Google profile and access token are available in the verify callback.
+
+2. **Verify Callback Function:**
+   - In the verify callback, you're logging the Google profile data (email, Google ID, profile photo, etc.).
+   - You're also handling the success redirect to the home page after successful authentication.
+
+Your implementation is following the OAuth 2.0 authorization code flow, where your application redirects users to Google for authentication and then receives an authorization code in the callback. Your application then exchanges this code for an access token to access the user's data.
+
+Your use of Passport.js has simplified the entire process, abstracting the complexities of the OAuth flow and user authentication. You're now well-equipped to create endpoints that require user authentication, making use of Passport's user session management.
+
+Keep in mind that, as you've mentioned, you disabled sessions for testing purposes. Re-enabling sessions will allow Passport to manage user authentication sessions more effectively, providing a seamless and secure experience for users across different parts of your application.
+
+## Cookie Based Authentication
+You're diving into an essential aspect of web development: cookies. Cookies are crucial for storing and transmitting data between the client (browser) and the server. They allow websites to maintain user sessions, store user preferences, and more. It's great that you're exploring this topic further. Here's a brief overview of the concepts you've covered:
+
+1. **What are Cookies:**
+   - Cookies are strings of data that are stored in a user's browser when interacting with a website.
+   - They are sent back to the server on subsequent requests, allowing the server to recognize and remember the user.
+
+2. **Cookie Properties:**
+   - Cookies have various properties, including a name, value, domain, path, expiration date, and additional flags.
+   - Domains and paths determine when the browser sends the cookie back to the server.
+   - Expiration dates define when the cookie becomes invalid.
+
+3. **Use Cases of Cookies:**
+   - Cookies are used for various purposes, such as session management, authentication, tracking user behavior, and storing user preferences.
+
+4. **Token-Based Authentication vs. Cookie-Based Authentication:**
+   - Token-based authentication involves sending an access token in the authorization header of each request. It's commonly used in APIs and single-page applications.
+   - Cookie-based authentication involves storing authentication data in cookies. The server sets a cookie with session data upon successful login, and the browser sends it automatically with each request. This is often used in traditional web applications.
+
+5. **Session Management:**
+   - Sessions are a way to manage user interactions on a website.
+   - A session typically involves creating a unique session ID for each user, which is stored in a cookie.
+   - The server maintains session data on its side and uses the session ID to identify the user's session.
+
+Understanding cookies and how they relate to authentication and session management is crucial for building secure and efficient web applications. Cookies provide a way to maintain state across different requests, allowing users to stay authenticated and access personalized content during their browsing session.
+
+As you proceed, you'll likely encounter different strategies for managing cookies and handling user sessions. Some applications might opt for server-side sessions, while others might use client-side storage mechanisms like JWTs (JSON Web Tokens) or hybrid approaches. The choice depends on your application's requirements and security considerations.
+
+## Sessions
+Absolutely, understanding sessions is crucial when building web applications, especially those that require user authentication. Sessions allow you to store and manage user-specific data on the server-side during a user's interaction with your application. This data can include sensitive information, user preferences, and temporary state.
+
+Here's a more concrete example to help illustrate the concept of sessions:
+
+**Example: Online Shopping Cart**
+
+Imagine you're building an e-commerce website. You want users to be able to add items to their shopping carts while they browse the products. The user's shopping cart is specific to them, and you don't want them to be able to modify their cart from the client side, as that could lead to unintended behavior or security issues.
+
+In this scenario:
+
+1. When a user adds items to their shopping cart, the information about the items is sent to the server.
+2. The server creates a session for that user and associates the shopping cart data with their session.
+3. The server generates a unique session ID, which is often stored in a cookie on the user's browser. This session ID is used to identify the user's session on subsequent requests.
+4. The session data (in this case, the shopping cart contents) is stored on the server-side, typically in memory or a server-side storage solution.
+5. As the user continues to interact with the application, their session ID is sent with each request. The server uses this session ID to retrieve the corresponding session data.
+6. When the user decides to check out and place an order, the session data is used to generate the order based on their shopping cart contents.
+7. After the order is complete, the session data is cleared, and the session is effectively ended.
+
+It's important to note that sessions are typically short-lived and tied to a specific browser or device. When a user logs out, their session is usually invalidated, and any associated session data is removed from the server.
+
+Sessions provide a way to manage temporary user-specific data without requiring the user to re-authenticate with every request. This is particularly useful for scenarios where you want to maintain context and state throughout a user's interaction with your application.
+
+As you delve further into web development and work with authentication and state management, you'll encounter different tools and frameworks that help you handle sessions effectively. These tools often provide mechanisms for securely storing session data, managing session expiration, and ensuring the integrity of session-related operations.
+
+## Server VS Client Side Sessions With Cookies
+You've covered some important concepts related to sessions, cookies, and authentication. Let's summarize what we've learned:
+
+**1. Sessions:** Sessions are a way of storing and managing user-specific data during their interaction with a web application. They're typically used to store temporary state and sensitive information that should not be modified by the user directly.
+
+**2. Server-Side Sessions vs. Client-Side Sessions:** Sessions can be implemented using either server-side storage or client-side storage (usually cookies). Server-side sessions involve storing session data on the server, often in a database, and using a session identifier (often stored in a cookie) to retrieve that data for each user request. Client-side sessions involve storing session data directly in cookies on the user's browser.
+
+**3. Stateful Cookies:** In the context of server-side sessions, stateful cookies are used to store a session identifier that points to session data stored on the server. The server needs to perform a database lookup to retrieve the session data associated with that identifier. This approach can add load to the server and may be less scalable.
+
+**4. Stateless Cookies:** In the context of client-side sessions, session data is stored directly in cookies on the user's browser. Each piece of session data corresponds to a cookie value. To ensure security, cookies can be signed or encrypted by the server before being sent to the client. The server validates the cookies on subsequent requests.
+
+**5. Choosing Between Server-Side and Client-Side Sessions:** The choice between server-side and client-side sessions depends on the level of security required and the complexity of the application. Server-side sessions are more secure for highly sensitive data, while client-side sessions simplify the backend and can lead to better scalability.
+
+**6. Benefits of Client-Side Sessions:** Client-side sessions simplify the backend by reducing the need for frequent database lookups. They also improve scalability by reducing the load on the server. Basic identifying information about the user is often stored in client-side sessions, making them suitable for many use cases.
+
+Understanding the differences between these approaches and the benefits they offer is crucial when designing authentication and session management for your web applications. The choice between server-side and client-side sessions depends on your application's requirements and security considerations.
+
+## Session Middleware in Express
+
+## Setting Up OAuth Cookie Session
+
+## 
